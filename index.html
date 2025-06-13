@@ -295,31 +295,87 @@
             text-align: center;
         }
 
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+        .narrative-summary {
             margin: 30px 0;
-        }
-
-        .summary-card {
-            background: var(--background-color);
             padding: 20px;
+            background: var(--background-color);
+            border-radius: 10px;
+        }
+
+        .insight-card {
+            background: white;
+            padding: 25px;
             border-radius: 8px;
-            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .summary-card h4 {
+        .insight-card h4 {
             color: var(--secondary-color);
+            font-size: 1.3em;
             margin-bottom: 15px;
-            font-size: 1.2em;
         }
 
-        .summary-value {
-            font-size: 1.8em;
+        .insight-card p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .insight-card .highlight {
             font-weight: bold;
             color: var(--primary-color);
-            margin: 10px 0;
+        }
+
+        .land-availability {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .land-availability h4 {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .land-availability p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .big-picture {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .big-picture h4 {
+            color: var(--primary-color);
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .big-picture p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .chart-context {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--background-color);
+            border-radius: 8px;
+        }
+
+        .chart-context p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 10px;
         }
 
         .warning-text {
@@ -406,11 +462,6 @@
                 height: 300px;
             }
 
-            .summary-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
             .narrative-section, .scenario-section, .results-section {
                 padding: 20px;
             }
@@ -470,6 +521,15 @@
                         </div>
                     </p>
                     <div class="calculation" id="growthCalculation" role="status"></div>
+                    <div class="density-guide">
+                        💡 Historical Context:
+                        <p>For population change between 2010 and 2020:</p>
+                        <ul>
+                            <li>University Circle grew by +21.2%</li>
+                            <li>Ohio City grew by +9.7%</li>
+                            <li>Old Brooklyn grew by +1.0%</li>
+                        </ul>
+                    </div>
                     <div class="error-message" id="growthError" role="alert"></div>
                 </div>
 
@@ -486,6 +546,15 @@
                         </div>
                         people per household.
                     </p>
+                    <div class="density-guide">
+                        💡 Historical Context:
+                        <p>Between 2010 and 2020, Cleveland's average household size went from 1.91 to 1.87 people per home. However, this trend varied greatly:</p>
+                        <ul>
+                            <li>Downtown: Saw a significant drop from 1.77 to 1.39 people per home.</li>
+                            <li>Detroit-Shoreway: Decreased from 1.92 to 1.74 people per home.</li>
+                            <li>Broadway-Slavic Village: Went against the trend, increasing from 1.78 to 1.94 people per home.</li>
+                        </ul>
+                    </div>
                     <div class="error-message" id="householdError" role="alert"></div>
                 </div>
 
@@ -506,8 +575,8 @@
                         💡 Density Guide:
                         <ul>
                             <li>1-4 homes/acre = Suburban neighborhoods with large yards</li>
-                            <li>5-15 homes/acre = Traditional city neighborhoods</li>
-                            <li>20+ homes/acre = Dense urban areas with townhouses/condos</li>
+                            <li>5-15 homes/acre = Typical Cleveland neighborhoods</li>
+                            <li>20+ homes/acre = Dense urban areas with apartment buildings</li>
                         </ul>
                     </div>
                     <div class="error-message" id="densityError" role="alert"></div>
@@ -518,28 +587,22 @@
             <div id="results" class="results-section" style="display: none;" role="region" aria-label="Simulation results">
                 <h3>📊 Here's What We Discovered</h3>
                 
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <h4>🎯 Typical Land Need</h4>
-                        <div id="averageAcres" class="summary-value" aria-label="Average acres needed">-</div>
-                        <p>acres on average</p>
-                    </div>
-                    <div class="summary-card">
-                        <h4>📈 High-Growth Need</h4>
-                        <div id="percentile90" class="summary-value" aria-label="90th percentile acres needed">-</div>
-                        <p>acres (90th percentile)</p>
-                    </div>
-                    <div class="summary-card">
-                        <h4>🏠 Land Available</h4>
-                        <div id="availableLand" class="summary-value" aria-label="Available acres">-</div>
-                        <p>acres currently vacant</p>
+                <div class="narrative-summary">
+                    <div class="insight-card">
+                        <h4>🎯 The Big Picture</h4>
+                        <p id="bigPictureText"></p>
+                        <p>Based on 10,000 simulated scenarios, we found that:</p>
+                        
+                        <p>On average, <span class="highlight" id="narrativeAverageAcres">-</span> acres (<span class="highlight" id="narrativeAveragePercent">-</span>% of available land) would be needed to accommodate this growth.</p>
+                        
+                        <p>In 9 out of 10 scenarios, no more than <span class="highlight" id="narrativePercentile90">-</span> acres (<span class="highlight" id="narrativePercentile90Percent">-</span>% of available land) would be required.</p>
+                        
+                        <p>This would leave <span class="highlight" id="narrativeRemainingAcres">-</span> acres of land vacant for future development.</p>
                     </div>
                 </div>
 
-                <div id="realityCheck" class="summary-card warning-text" role="alert">
-                    <h4>⚠️ Reality Check</h4>
-                    <div id="exceedingCount" class="summary-value" aria-label="Number of scenarios exceeding available land">-</div>
-                    <p>scenarios would need more land than is available</p>
+                <div class="chart-context">
+                    <p>Below is a visualization of all 10,000 scenarios we simulated. Each bar represents a range of land needed, showing how many different scenarios would require that amount of land. The red bars indicate scenarios that would exceed the available vacant land in the neighborhood.</p>
                 </div>
 
                 <div class="chart-container" role="img" aria-label="Histogram showing distribution of land needed across 10,000 scenarios">
@@ -552,7 +615,11 @@
                     <div id="exampleContent"></div>
                 </div>
 
-                <button id="resetButton" class="reset-button" aria-label="Reset simulator and try another neighborhood">🔄 Try Another Neighborhood</button>
+                <div class="button-container" style="display: flex; gap: 20px; justify-content: center;">
+                    <button id="resetButton" class="reset-button" aria-label="Reset simulator and try another neighborhood">🔄 Try Another Neighborhood</button>
+                    <button id="runAgainButton" class="reset-button" style="background: var(--secondary-color);" aria-label="Run another simulation for this neighborhood">🔄 Run Another Simulation</button>
+                    <button id="exportButton" class="reset-button" style="background: var(--primary-color);" aria-label="Export simulation results">📊 Export Results</button>
+                </div>
             </div>
         </div>
     </div>
@@ -937,6 +1004,32 @@ Now, let's imagine some possible futures...`;
         // Add reset button event listener
         document.getElementById('resetButton').addEventListener('click', resetSimulator);
 
+        // Add run again button event listener
+        document.getElementById('runAgainButton').addEventListener('click', () => {
+            // Hide results section
+            document.getElementById('results').style.display = 'none';
+            
+            // Show scenario section
+            document.getElementById('scenario').style.display = 'block';
+            
+            // Scroll to scenario section
+            document.getElementById('scenario').scrollIntoView({ behavior: 'smooth' });
+            
+            // Reset input values to defaults
+            document.getElementById('min_growth_pct').value = '5';
+            document.getElementById('max_growth_pct').value = '15';
+            document.getElementById('min_household_size').value = '2.2';
+            document.getElementById('max_household_size').value = '2.8';
+            document.getElementById('min_units_per_acre').value = '4';
+            document.getElementById('max_units_per_acre').value = '12';
+            
+            // Update growth calculation
+            updateGrowthCalculation();
+            
+            // Validate inputs
+            validateInputs();
+        });
+
         function showLoading() {
             document.querySelector('.loading-overlay').style.display = 'flex';
         }
@@ -957,7 +1050,7 @@ Now, let's imagine some possible futures...`;
             const successDiv = document.createElement('div');
             successDiv.className = 'success-message';
             successDiv.textContent = message;
-            document.querySelector('.results-section').insertBefore(successDiv, document.querySelector('.summary-grid'));
+            document.querySelector('.results-section').insertBefore(successDiv, document.querySelector('.narrative-summary'));
             successDiv.style.display = 'block';
             setTimeout(() => successDiv.style.display = 'none', 3000);
         }
@@ -992,7 +1085,8 @@ Now, let's imagine some possible futures...`;
                 percentile90: 0,
                 exceedingCount: 0,
                 availableLand: neighborhood.Vacant_Land_Acres_2023,
-                exampleScenario: null
+                exampleScenario: null,
+                params: params  // Store the parameters in the results object
             };
 
             const SIMULATIONS = 10000;
@@ -1066,19 +1160,65 @@ Now, let's imagine some possible futures...`;
             runBatch();
         }
 
+        function generateLandAvailabilityInsight(results) {
+            const surplus = results.availableLand - results.percentile90;
+            const surplusPercent = Math.round((surplus / results.availableLand * 100));
+            
+            if (surplus > 0) {
+                return `Even in scenarios where ${Math.round(results.percentile90)} acres are needed (which happens 1 time out of 10), ${Math.round(surplus)} acres of vacant land would remain unused, representing ${surplusPercent}% of currently vacant land.`;
+            } else {
+                const deficit = Math.abs(surplus);
+                const deficitPercent = Math.round((deficit / results.availableLand * 100));
+                return `In scenarios where ${Math.round(results.percentile90)} acres are needed (which happens 1 time out of 10), ${Math.round(deficit)} more acres would be required than currently available, representing a ${deficitPercent}% increase in land needed beyond what's currently vacant.`;
+            }
+        }
+
+        function generateBigPictureText(results) {
+            const avgLandUsedPercent = Math.round((results.average / results.availableLand * 100));
+            const recentTrend = selectedNeighborhood.Population_2020 - selectedNeighborhood.Population_2010;
+            const trendDirection = recentTrend >= 0 ? 'grown' : 'declined';
+            const trendPercent = Math.round(Math.abs(calculatePercentageChange(selectedNeighborhood.Population_2010, selectedNeighborhood.Population_2020)));
+            
+            return `Over the past decade, ${selectedNeighborhood.Neighborhood} has ${trendDirection} by ${trendPercent}%. Our analysis shows that the neighborhood could accommodate significant additional growth, with the average scenario utilizing ${avgLandUsedPercent}% of available vacant land.`;
+        }
+
         function displayResults(results) {
             const resultsSection = document.getElementById('results');
             resultsSection.style.display = 'block';
 
-            // Update summary statistics
-            document.getElementById('averageAcres').textContent = 
-                `${results.average.toFixed(1)}`;
-            document.getElementById('percentile90').textContent = 
-                `${results.percentile90.toFixed(1)}`;
-            document.getElementById('availableLand').textContent = 
-                `${results.availableLand.toFixed(1)}`;
-            document.getElementById('exceedingCount').textContent = 
-                `${results.exceedingCount.toLocaleString()} out of 10,000`;
+            // Calculate population change percentage
+            const popChange = selectedNeighborhood.Population_2020 - selectedNeighborhood.Population_2010;
+            const percentChange = Math.abs(calculatePercentageChange(selectedNeighborhood.Population_2010, selectedNeighborhood.Population_2020));
+            const changeDirection = popChange >= 0 ? 'grew' : 'declined';
+
+            // Calculate narrative values
+            const minGrowth = Math.round((results.params.min_growth_pct / 100) * selectedNeighborhood.Population_2020);
+            const maxGrowth = Math.round((results.params.max_growth_pct / 100) * selectedNeighborhood.Population_2020);
+            const averageAcres = Math.round(results.average);
+            const percentile90Acres = Math.round(results.percentile90);
+            const averagePercent = Math.round((results.average / results.availableLand) * 100);
+            const percentile90Percent = Math.round((results.percentile90 / results.availableLand) * 100);
+            const remainingAcres = Math.round(results.availableLand - results.percentile90);
+
+            // Update the Big Picture text with dynamic neighborhood name and population change
+            const bigPictureText = document.getElementById('bigPictureText');
+            if (bigPictureText) {
+                bigPictureText.innerHTML = `
+                    <p>Between 2010 and 2020, ${selectedNeighborhood.Neighborhood}'s population ${changeDirection} by ${percentChange}%.</p>
+                    
+                    <p>Looking ahead, we predicted that the neighborhood's population would grow by between <span class="highlight">${results.params.min_growth_pct}%</span> and <span class="highlight">${results.params.max_growth_pct}%</span>.</p>
+                    
+                    <p>These new residents would form households averaging between <span class="highlight">${results.params.min_household_size.toFixed(1)}</span> and <span class="highlight">${results.params.max_household_size.toFixed(1)}</span> people each.</p>
+                    
+                    <p>New development would occur at a density of between <span class="highlight">${results.params.min_units_per_acre}</span> and <span class="highlight">${results.params.max_units_per_acre}</span> homes per acre.</p>`;
+            }
+
+            // Update narrative elements
+            document.getElementById('narrativeAverageAcres').textContent = averageAcres;
+            document.getElementById('narrativeAveragePercent').textContent = averagePercent;
+            document.getElementById('narrativePercentile90').textContent = percentile90Acres;
+            document.getElementById('narrativePercentile90Percent').textContent = percentile90Percent;
+            document.getElementById('narrativeRemainingAcres').textContent = remainingAcres;
 
             // Show chart container
             const chartContainer = document.querySelector('.chart-container');
@@ -1097,7 +1237,7 @@ Now, let's imagine some possible futures...`;
             for (let i = 0; i < binCount; i++) {
                 const binStart = min + (i * binSize);
                 const binEnd = binStart + binSize;
-                binLabels.push(`${binStart.toFixed(1)} - ${binEnd.toFixed(1)}`);
+                binLabels.push(`${Math.round(binStart)} - ${Math.round(binEnd)}`);
                 
                 // Count scenarios in this bin
                 results.allResults.forEach(value => {
@@ -1106,8 +1246,14 @@ Now, let's imagine some possible futures...`;
                     }
                 });
 
-                // Color the bin red if it exceeds available land
-                binColors.push(binEnd > results.availableLand ? '#EF4444' : '#94A3B8');
+                // Color the bins based on three zones
+                if (binEnd > results.availableLand) {
+                    binColors.push('#EF4444'); // Red for exceeding available land
+                } else if (binEnd > results.percentile90) {
+                    binColors.push('#FCD34D'); // Yellow for high-risk scenarios
+                } else {
+                    binColors.push('#94A3B8'); // Gray for normal scenarios
+                }
             }
 
             // Create chart
@@ -1137,9 +1283,19 @@ Now, let's imagine some possible futures...`;
                     plugins: {
                         title: {
                             display: true,
-                            text: '📈 The Full Picture: All 10,000 Scenarios',
+                            text: '📊 Exploring the Range of Possibilities',
                             font: {
                                 size: 16
+                            }
+                        },
+                        subtitle: {
+                            display: true,
+                            text: 'Distribution of land needed across 10,000 different growth scenarios',
+                            font: {
+                                size: 14
+                            },
+                            padding: {
+                                bottom: 20
                             }
                         },
                         legend: {
@@ -1149,13 +1305,19 @@ Now, let's imagine some possible futures...`;
                                 generateLabels: function(chart) {
                                     return [
                                         {
-                                            text: `Scenarios within available land (${results.availableLand.toFixed(1)} acres)`,
+                                            text: `Normal scenarios (up to ${Math.round(results.percentile90)} acres)`,
                                             fillStyle: '#94A3B8',
                                             strokeStyle: '#94A3B8',
                                             lineWidth: 2
                                         },
                                         {
-                                            text: `Scenarios exceeding available land`,
+                                            text: `High-growth scenarios (${Math.round(results.percentile90)} - ${Math.round(results.availableLand)} acres)`,
+                                            fillStyle: '#FCD34D',
+                                            strokeStyle: '#FCD34D',
+                                            lineWidth: 2
+                                        },
+                                        {
+                                            text: `Scenarios exceeding available land (${Math.round(results.availableLand)}+ acres)`,
                                             fillStyle: '#EF4444',
                                             strokeStyle: '#EF4444',
                                             lineWidth: 2
@@ -1193,20 +1355,14 @@ Now, let's imagine some possible futures...`;
 
             // Display example scenario
             document.getElementById('exampleContent').innerHTML = `
-                <p>For example, imagine this scenario:</p>
-                <ul>
-                    <li>Population grows by <span class="highlight">${results.exampleScenario.growth_pct.toFixed(1)}%</span> 
-                        (adding <span class="highlight">${newResidents.toLocaleString()}</span> new residents)</li>
-                    <li>New households average <span class="highlight">${results.exampleScenario.household_size.toFixed(1)}</span> people each</li>
-                    <li>Development happens at <span class="highlight">${results.exampleScenario.density.toFixed(1)}</span> homes per acre</li>
-                    <li><strong>Result:</strong> This future would need <span class="highlight">${results.exampleScenario.acres_needed.toFixed(1)}</span> acres of land</li>
-                </ul>
-                <div class="land-usage">
-                    ${results.exampleScenario.acres_needed > results.availableLand 
-                        ? `This scenario would exceed available land by <span class="highlight">${landExceeded.toFixed(1)}</span> acres.`
-                        : `This scenario would use <span class="highlight">${landUsedPercent}%</span> of available vacant land.`
-                    }
-                </div>
+                <p>In this scenario, ${selectedNeighborhood.Neighborhood} experiences ${results.exampleScenario.growth_pct.toFixed(1)}% population growth, welcoming ${newResidents.toLocaleString()} new residents. These newcomers would form households averaging ${results.exampleScenario.household_size.toFixed(1)} people each, and new development would occur at a density of ${results.exampleScenario.density.toFixed(1)} homes per acre.</p>
+                
+                <p>Under these conditions, the neighborhood would need ${results.exampleScenario.acres_needed.toFixed(1)} acres of land to accommodate this growth. ${results.exampleScenario.acres_needed > results.availableLand 
+                    ? `This ambitious scenario would require ${landExceeded.toFixed(1)} more acres than currently available, suggesting the need for creative development solutions.`
+                    : `This balanced scenario would use ${landUsedPercent}% of the neighborhood's available vacant land, leaving room for future development opportunities.`
+                }</p>
+                
+                <p>This is just one of many possible futures for ${selectedNeighborhood.Neighborhood}. Click the button below to explore another scenario from our simulation.</p>
             `;
 
             // Reset button
@@ -1233,6 +1389,59 @@ Now, let's imagine some possible futures...`;
             };
 
             runSimulation(selectedNeighborhood, params);
+        });
+
+        // Add export button event listener
+        document.getElementById('exportButton').addEventListener('click', () => {
+            if (!selectedNeighborhood || !window.lastSimulationResults) return;
+
+            // Create CSV content
+            const csvRows = [];
+            
+            // Add metadata
+            csvRows.push(['Simulation Metadata']);
+            csvRows.push(['Neighborhood', selectedNeighborhood.Neighborhood]);
+            csvRows.push(['Current Population', selectedNeighborhood.Population_2020]);
+            csvRows.push(['Available Land (acres)', selectedNeighborhood.Vacant_Land_Acres_2023]);
+            csvRows.push([]);
+            
+            // Add input parameters
+            csvRows.push(['Input Parameters']);
+            csvRows.push(['Parameter', 'Value']);
+            csvRows.push(['Population Growth Range', `${window.lastSimulationResults.params.min_growth_pct}% - ${window.lastSimulationResults.params.max_growth_pct}%`]);
+            csvRows.push(['Household Size Range', `${window.lastSimulationResults.params.min_household_size} - ${window.lastSimulationResults.params.max_household_size}`]);
+            csvRows.push(['Density Range', `${window.lastSimulationResults.params.min_units_per_acre} - ${window.lastSimulationResults.params.max_units_per_acre} units/acre`]);
+            csvRows.push([]);
+            
+            // Add results summary
+            csvRows.push(['Results Summary']);
+            csvRows.push(['Metric', 'Value']);
+            csvRows.push(['Average Land Needed (acres)', window.lastSimulationResults.average.toFixed(2)]);
+            csvRows.push(['90th Percentile Land Needed (acres)', window.lastSimulationResults.percentile90.toFixed(2)]);
+            csvRows.push(['Scenarios Exceeding Available Land', window.lastSimulationResults.exceedingCount]);
+            csvRows.push(['Percentage Exceeding Available Land', `${(window.lastSimulationResults.exceedingCount / 10000 * 100).toFixed(1)}%`]);
+            csvRows.push([]);
+            
+            // Add all simulation results
+            csvRows.push(['All Simulation Results']);
+            csvRows.push(['Land Needed (acres)']);
+            window.lastSimulationResults.allResults.forEach(result => {
+                csvRows.push([result.toFixed(2)]);
+            });
+
+            // Convert to CSV string
+            const csvContent = csvRows.map(row => row.join(',')).join('\n');
+            
+            // Create and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${selectedNeighborhood.Neighborhood.replace(/\s+/g, '_')}_simulation_results.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
     </script>
 </body>
